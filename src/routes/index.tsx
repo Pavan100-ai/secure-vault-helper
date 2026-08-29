@@ -53,7 +53,7 @@ function randomInt(max: number) {
   let value = 0;
   do {
     crypto.getRandomValues(array);
-    value = array[0];
+    value = array[0]!;
   } while (value >= limit);
   return value % max;
 }
