@@ -1,64 +1,48 @@
-# Password Guardian
+# 🔐 Password Guardian
 
-Build a password strength checker web app with the following features:
+A real-time password strength checker built to demonstrate practical 
+understanding of password security and entropy-based scoring, created 
+as part of my cybersecurity coursework.
 
-1. A password input field with a "show/hide password" toggle
+## 🎯 Why I Built This
 
-2. Real-time strength analysis as the user types, using the zxcvbn 
+Most password checkers rely on simple rules (length, special characters) 
+which don't reflect real-world crackability. I wanted to build a tool 
+that uses actual entropy-based analysis, similar to what security 
+professionals use, to understand how password strength is really measured.
 
-   JavaScript library (npm package: zxcvbn) for entropy-based scoring
+## ✨ Features
 
-3. A visual strength meter (progress bar) with 5 levels: 
+- Real-time strength scoring using the zxcvbn library (entropy-based)
+- Estimated time-to-crack for the entered password
+- Visual strength meter with 5 levels (Very Weak to Very Strong)
+- Checklist for length, uppercase, lowercase, numbers, special characters
+- Strong random password generator
+- Copy-to-clipboard button
+- Warning if password matches common leaked passwords
+- 100% client-side — no password is ever sent or stored
 
-   Very Weak, Weak, Fair, Strong, Very Strong — color coded 
+## 🛠️ Tech Stack
 
-   (red to green)
+- React
+- Tailwind CSS
+- zxcvbn (Dropbox's password strength estimation library)
 
-4. Display estimated "time to crack" based on zxcvbn's crack-time 
+## 📸 Screenshot
 
-   estimate output
+*(screenshot goes here — I'll show you how to add it next)*
 
-5. Show specific feedback on WHY the password is weak (e.g. "too 
+## 🧠 What I Learned
 
-   short", "common word", "predictable pattern") using zxcvbn's 
+- How entropy-based password scoring differs from simple rule-based checks
+- Why "security-by-design" matters — never storing or transmitting sensitive input
+- How to structure a React project and use component-based UI
 
-   feedback.warning and feedback.suggestions
+## 🔮 Future Improvements
 
-6. A checklist showing pass/fail for: minimum length (8+), 
+- Integrate Have I Been Pwned API for real breach checking
+- Add password history tracking
 
-   uppercase letter, lowercase letter, number, special character
+## 📄 License
 
-7. Clean, modern dark-themed UI with a card layout, centered on 
-
-   the page
-
-8. Add a small disclaimer at the bottom: "This tool runs entirely 
-
-   in your browser. Your password is never sent or stored anywhere."
-
-Use React with Tailwind CSS. Keep the design minimal and professional, 
-
-similar to a security tool dashboard.
-
-This project was built with [Lovable](https://lovable.dev).
-
-**Live app**: https://secure-vault-helper.lovable.app
-
-## Build with Lovable
-
-Continue developing this project in the [Lovable editor](https://lovable.dev/projects/feda2d3e-7e72-4559-bfdc-e58c704d5c7b).
-
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: every change made in Lovable is committed straight to this repository.
-- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
-
-## Development
-
-Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
-
-```sh
-git clone <this-repository-url>
-cd <repository-name>
-npm i
-npm run dev
-```
+MIT
