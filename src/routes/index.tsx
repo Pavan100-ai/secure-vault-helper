@@ -1,12 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import zxcvbn from "zxcvbn";
-import { Eye, EyeOff, ShieldCheck, ShieldAlert, Check, X, Lock } from "lucide-react";
+import { Eye, EyeOff, ShieldCheck, ShieldAlert, Check, X, Lock, Wand2, Copy, AlertTriangle } from "lucide-react";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { COMMON_PASSWORDS } from "@/data/commonPasswords";
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
