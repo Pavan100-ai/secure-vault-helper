@@ -166,6 +166,35 @@ function PasswordStrengthChecker() {
               </Button>
             </div>
 
+            <div className="flex gap-2">
+              <Button type="button" variant="secondary" className="flex-1" onClick={handleGenerate}>
+                <Wand2 className="mr-2 h-4 w-4" aria-hidden="true" />
+                Generate strong password
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                onClick={handleCopy}
+                disabled={!password}
+                aria-label="Copy password to clipboard"
+              >
+                {copied ? <Check className="h-4 w-4 text-strength-strong" /> : <Copy className="h-4 w-4" />}
+              </Button>
+            </div>
+            {copied && <p className="-mt-4 text-xs text-strength-strong">Copied to clipboard</p>}
+
+            {isBreached && (
+              <div className="flex items-start gap-2 rounded-lg border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">
+                <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
+                <span>
+                  This password appears in the list of the 10,000 most common leaked passwords. Choose a different one.
+                </span>
+              </div>
+            )}
+
+
+
             {analysis.score >= 0 && (
               <div className="space-y-4">
                 <div className="space-y-2">
