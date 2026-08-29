@@ -30,7 +30,7 @@ professionals use, to understand how password strength is really measured.
 
 ## 📸 Screenshot
 
-*(screenshot goes here — I'll show you how to add it next)*
+![App Screenshot](screenshot.png)
 
 ## 🧠 What I Learned
 
