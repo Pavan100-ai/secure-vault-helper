@@ -1,12 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import zxcvbn from "zxcvbn";
-import { Eye, EyeOff, ShieldCheck, ShieldAlert, Check, X, Lock } from "lucide-react";
+import { Eye, EyeOff, ShieldCheck, ShieldAlert, Check, X, Lock, Wand2, Copy, AlertTriangle } from "lucide-react";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { COMMON_PASSWORDS } from "@/data/commonPasswords";
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -38,9 +40,41 @@ const CHECKLIST = [
   { key: "special", label: "Special character", test: (value: string) => /[^A-Za-z0-9]/.test(value) },
 ];
 
+const CHARSETS = {
+  lower: "abcdefghijkmnopqrstuvwxyz",
+  upper: "ABCDEFGHJKLMNPQRSTUVWXYZ",
+  digits: "23456789",
+  symbols: "!@#$%^&*()-_=+[]{};:,.?/",
+};
+
+function randomInt(max: number) {
+  const array = new Uint32Array(1);
+  const limit = Math.floor(0xffffffff / max) * max;
+  let value = 0;
+  do {
+    crypto.getRandomValues(array);
+    value = array[0]!;
+  } while (value >= limit);
+  return value % max;
+}
+
+function generatePassword(length = 20) {
+  const all = Object.values(CHARSETS).join("");
+  const chars = Object.values(CHARSETS).map((set) => set[randomInt(set.length)]);
+  while (chars.length < length) {
+    chars.push(all[randomInt(all.length)]);
+  }
+  for (let i = chars.length - 1; i > 0; i--) {
+    const j = randomInt(i + 1);
+    [chars[i], chars[j]] = [chars[j], chars[i]];
+  }
+  return chars.join("");
+}
+
 function PasswordStrengthChecker() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   const analysis = useMemo(() => {
     if (!password) {
@@ -60,8 +94,31 @@ function PasswordStrengthChecker() {
     };
   }, [password]);
 
+  const isBreached = useMemo(
+    () => password.length > 0 && COMMON_PASSWORDS.has(password.toLowerCase()),
+    [password],
+  );
+
   const currentLevel = STRENGTH_LEVELS[analysis.score] ?? null;
   const filledSegments = analysis.score >= 0 ? analysis.score + 1 : 0;
+
+  const handleGenerate = () => {
+    setPassword(generatePassword());
+    setShowPassword(true);
+    setCopied(false);
+  };
+
+  const handleCopy = async () => {
+    if (!password) return;
+    try {
+      await navigator.clipboard.writeText(password);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 2000);
+    } catch {
+      setCopied(false);
+    }
+  };
+
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-background px-4 py-12">
@@ -108,6 +165,35 @@ function PasswordStrengthChecker() {
                 {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </Button>
             </div>
+
+            <div className="flex gap-2">
+              <Button type="button" variant="secondary" className="flex-1" onClick={handleGenerate}>
+                <Wand2 className="mr-2 h-4 w-4" aria-hidden="true" />
+                Generate strong password
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                onClick={handleCopy}
+                disabled={!password}
+                aria-label="Copy password to clipboard"
+              >
+                {copied ? <Check className="h-4 w-4 text-strength-strong" /> : <Copy className="h-4 w-4" />}
+              </Button>
+            </div>
+            {copied && <p className="-mt-4 text-xs text-strength-strong">Copied to clipboard</p>}
+
+            {isBreached && (
+              <div className="flex items-start gap-2 rounded-lg border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">
+                <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
+                <span>
+                  This password appears in the list of the 10,000 most common leaked passwords. Choose a different one.
+                </span>
+              </div>
+            )}
+
+
 
             {analysis.score >= 0 && (
               <div className="space-y-4">
