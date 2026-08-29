@@ -40,9 +40,41 @@ const CHECKLIST = [
   { key: "special", label: "Special character", test: (value: string) => /[^A-Za-z0-9]/.test(value) },
 ];
 
+const CHARSETS = {
+  lower: "abcdefghijkmnopqrstuvwxyz",
+  upper: "ABCDEFGHJKLMNPQRSTUVWXYZ",
+  digits: "23456789",
+  symbols: "!@#$%^&*()-_=+[]{};:,.?/",
+};
+
+function randomInt(max: number) {
+  const array = new Uint32Array(1);
+  const limit = Math.floor(0xffffffff / max) * max;
+  let value = 0;
+  do {
+    crypto.getRandomValues(array);
+    value = array[0];
+  } while (value >= limit);
+  return value % max;
+}
+
+function generatePassword(length = 20) {
+  const all = Object.values(CHARSETS).join("");
+  const chars = Object.values(CHARSETS).map((set) => set[randomInt(set.length)]);
+  while (chars.length < length) {
+    chars.push(all[randomInt(all.length)]);
+  }
+  for (let i = chars.length - 1; i > 0; i--) {
+    const j = randomInt(i + 1);
+    [chars[i], chars[j]] = [chars[j], chars[i]];
+  }
+  return chars.join("");
+}
+
 function PasswordStrengthChecker() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   const analysis = useMemo(() => {
     if (!password) {
@@ -62,8 +94,31 @@ function PasswordStrengthChecker() {
     };
   }, [password]);
 
+  const isBreached = useMemo(
+    () => password.length > 0 && COMMON_PASSWORDS.has(password.toLowerCase()),
+    [password],
+  );
+
   const currentLevel = STRENGTH_LEVELS[analysis.score] ?? null;
   const filledSegments = analysis.score >= 0 ? analysis.score + 1 : 0;
+
+  const handleGenerate = () => {
+    setPassword(generatePassword());
+    setShowPassword(true);
+    setCopied(false);
+  };
+
+  const handleCopy = async () => {
+    if (!password) return;
+    try {
+      await navigator.clipboard.writeText(password);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 2000);
+    } catch {
+      setCopied(false);
+    }
+  };
+
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-background px-4 py-12">
